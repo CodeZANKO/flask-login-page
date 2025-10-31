@@ -1,1 +1,136 @@
-Loading configuration....
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Home — totrial</title>
+
+    <!-- Tailwind Play CDN (quick prototyping) -->
+    <script>
+        tailwind = window.tailwind || {};
+        tailwind.config = { darkMode: 'media' };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* small helper for the slightly frosted radial decorations */
+        .decor {
+            position: absolute;
+            filter: blur(48px);
+            opacity: .08;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center px-6 py-8 bg-gray-50 dark:bg-slate-900 text-slate-900 dark:text-slate-200">
+    <!-- decorative gradients -->
+    <div class="decor left-[-8%] top-[-6%] w-[48rem] h-[24rem] rounded-full bg-gradient-to-br from-blue-500 to-transparent" aria-hidden="true"></div>
+    <div class="decor right-[-6%] bottom-[-8%] w-[40rem] h-[20rem] rounded-full bg-gradient-to-br from-blue-400 to-transparent" aria-hidden="true"></div>
+
+    <main class="relative z-10 w-full max-w-md">
+        <header class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold bg-gradient-to-br from-blue-600 to-blue-500 shadow-lg" aria-hidden="true">
+                <small class="leading-none">tt</small>
+            </div>
+            <div>
+                <div class="font-semibold">totrial</div>
+                <div class="text-sm text-slate-500 dark:text-slate-400">Simple demo application</div>
+            </div>
+        </header>
+
+        <section class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 sm:p-7">
+            <h1 class="text-lg font-semibold mb-1" id="signin-heading">Sign in to your account</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Enter your credentials to access the dashboard. Your session will be kept secure.</p>
+
+            <form action="{{ url_for('index') }}" method="POST" novalidate aria-describedby="server-message" class="space-y-4">
+                {% if request.method == 'POST' %}
+                    <div id="server-message" role="alert" aria-live="polite"
+                             class="rounded-lg px-3 py-2 text-sm
+                                            {% if color == 'green' %}bg-emerald-50 text-emerald-800 border border-emerald-100{% else %}bg-red-50 text-red-700 border border-red-100{% endif %}">
+                        {{ message }} {{ trueUsername}}
+                    </div>
+                {% endif %}
+
+                <div class="space-y-3">
+                    <div>
+                        <label for="username" class="block text-sm text-slate-600 dark:text-slate-300">Username</label>
+                        <input
+                            id="username"
+                            name="username"
+                            type="text"
+                            class="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent dark:focus:ring-blue-500"
+                            placeholder="e.g. johndoe"
+                            autocomplete="username"
+                            required
+                            aria-required="true"
+                            aria-describedby="username-help">
+                        <div id="username-help" class="sr-only">Enter your username</div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm text-slate-600 dark:text-slate-300">Password</label>
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            class="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent dark:focus:ring-blue-500"
+                            placeholder="Your password"
+                            autocomplete="current-password"
+                            required
+                            aria-required="true"
+                            aria-describedby="password-help">
+                        <div id="password-help" class="sr-only">Enter your password</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        Sign in
+                    </button>
+
+                    <div class="flex items-center justify-between text-sm text-slate-600 dark:text-slate-300">
+                        <label class="inline-flex items-center gap-2">
+                            <input type="checkbox" name="remember" class="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-400" aria-label="Remember me">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" class="text-blue-600 hover:underline" aria-label="Forgot password">Forgot?</a>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        // Small client-side validation UX: focus first invalid and set aria-invalid
+        (function(){
+                const form = document.querySelector('form');
+                if(!form) return;
+
+                form.addEventListener('submit', function(e){
+                        const controls = form.querySelectorAll('[required]');
+                        let firstInvalid = null;
+                        controls.forEach(c => c.removeAttribute('aria-invalid'));
+
+                        for(const el of controls){
+                                if(!el.checkValidity()){
+                                        firstInvalid = firstInvalid || el;
+                                        el.setAttribute('aria-invalid', 'true');
+                                }
+                        }
+                        if(firstInvalid){
+                                e.preventDefault();
+                                firstInvalid.focus();
+                        }
+                });
+
+                form.addEventListener('input', function(e){
+                        const t = e.target;
+                        if(t.hasAttribute('aria-invalid') && t.checkValidity()){
+                                t.removeAttribute('aria-invalid');
+                        }
+                });
+        })();
+    </script>
+</body>
+</html>
